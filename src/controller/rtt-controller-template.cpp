@@ -11,7 +11,7 @@ using namespace RTT;
 using namespace Orocos;
 
 #define l(lvl) log(lvl) << "[" << this->getName() << "] "
-#define JOINT_NAMES_MAPPING_LOOKUP( memberDict, remoteDict, jointName ) memberDict.jointName = remoteDict.at(#jointName)
+#define JOINT_NAMES_MAPPING_LOOKUP( it, memberDict, remoteDict, jointName ) {it = remoteDict.find(#jointName); if (it != remoteDict.end()) { memberDict.jointName = it->second; } it = remoteDict.end(); }
 
 RttControllerTemplate::RttControllerTemplate(std::string const& name) :
 		RTTArmControllerBase(name, "lwr_arm_base_link", "lwr_arm_7_link", 7),
@@ -58,13 +58,14 @@ void RttControllerTemplate::retrieveJointMappingsHook(
 		std::string const& port_name,
 		std::map<std::string, int> const& mapping) {
 	if (port_name == "cmdJntPos") {
-		JOINT_NAMES_MAPPING_LOOKUP(jp_FullArm, mapping, lwr_arm_0_joint);
-		JOINT_NAMES_MAPPING_LOOKUP(jp_FullArm, mapping, lwr_arm_1_joint);
-		JOINT_NAMES_MAPPING_LOOKUP(jp_FullArm, mapping, lwr_arm_2_joint);
-		JOINT_NAMES_MAPPING_LOOKUP(jp_FullArm, mapping, lwr_arm_3_joint);
-		JOINT_NAMES_MAPPING_LOOKUP(jp_FullArm, mapping, lwr_arm_4_joint);
-		JOINT_NAMES_MAPPING_LOOKUP(jp_FullArm, mapping, lwr_arm_5_joint);
-		JOINT_NAMES_MAPPING_LOOKUP(jp_FullArm, mapping, lwr_arm_6_joint);
+		std::map<std::string, int>::const_iterator it;
+		JOINT_NAMES_MAPPING_LOOKUP(it, jp_FullArm, mapping, lwr_arm_0_joint);
+		JOINT_NAMES_MAPPING_LOOKUP(it, jp_FullArm, mapping, lwr_arm_1_joint);
+		JOINT_NAMES_MAPPING_LOOKUP(it, jp_FullArm, mapping, lwr_arm_2_joint);
+		JOINT_NAMES_MAPPING_LOOKUP(it, jp_FullArm, mapping, lwr_arm_3_joint);
+		JOINT_NAMES_MAPPING_LOOKUP(it, jp_FullArm, mapping, lwr_arm_4_joint);
+		JOINT_NAMES_MAPPING_LOOKUP(it, jp_FullArm, mapping, lwr_arm_5_joint);
+		JOINT_NAMES_MAPPING_LOOKUP(it, jp_FullArm, mapping, lwr_arm_6_joint);
 	}
 }
 
@@ -120,12 +121,15 @@ void RttControllerTemplate::updateHook() {
 	//    currJntAcc = (jnt_vel_ - lastJntVel) / 0.001;//delta_t ;
 
 	// calculate mass(M_), coriolis(C_), gravity(G_), jacobian(jac_) (based on velocities)
-	updateDynamicsAndKinematics(currJntPos, currJntVel, currJntTrq);
 
-	// start simple joint position controller
-	kg_.setConstant(1);
-	jnt_trq_cmd_ = G_.data; // + kg_.asDiagonal() * (q_des_FirstPoint.data - jnt_pos_);
-	outJntTrq.torques = jnt_trq_cmd_.cast<float>();
+//	updateDynamicsAndKinematics(currJntPos, currJntVel, currJntTrq);
+
+	outJntTrq.torques(jp_FullArm.lwr_arm_0_joint) = 30;
+
+//	// start simple joint position controller
+//	kg_.setConstant(1);
+//	jnt_trq_cmd_ = G_.data; // + kg_.asDiagonal() * (q_des_FirstPoint.data - jnt_pos_);
+//	outJntTrq.torques = jnt_trq_cmd_.cast<float>();
 
 	// write torques to robot
 	if (cmdJntTrq_Port.connected()) {

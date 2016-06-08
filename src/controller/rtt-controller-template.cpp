@@ -110,12 +110,12 @@ void RttControllerTemplate::updateHook() {
 		currJntTrq_Flow = currJntTrq_Port.read(currJntTrq);
 	}
 
-	// check for NoData
-	if ((currJntPos_Flow == RTT::NoData) || (currJntVel_Flow == RTT::NoData)
-			|| (currJntTrq_Flow == RTT::NoData)) {
-		// skip this step, because we don't receive all the necessary data.
-		return;
-	}
+//	// check for NoData
+//	if ((currJntPos_Flow == RTT::NoData) || (currJntVel_Flow == RTT::NoData)
+//			|| (currJntTrq_Flow == RTT::NoData)) {
+//		// skip this step, because we don't receive all the necessary data.
+//		return;
+//	}
 
 	//	double delta_t = getSimulationTime() - last_SimulationTime;
 	//    currJntAcc = (jnt_vel_ - lastJntVel) / 0.001;//delta_t ;
@@ -124,7 +124,13 @@ void RttControllerTemplate::updateHook() {
 
 //	updateDynamicsAndKinematics(currJntPos, currJntVel, currJntTrq);
 
-	outJntTrq.torques(jp_FullArm.lwr_arm_0_joint) = 30;
+	outJntPos.angles(jp_FullArm.lwr_arm_0_joint) = 1.1;
+	outJntPos.angles(jp_FullArm.lwr_arm_1_joint) = 0.55;
+//	outJntPos.angles(jp_FullArm.lwr_arm_2_joint) = 0;
+//	outJntPos.angles(jp_FullArm.lwr_arm_3_joint) = 0;
+//	outJntPos.angles(jp_FullArm.lwr_arm_4_joint) = 0;
+	outJntPos.angles(jp_FullArm.lwr_arm_5_joint) = 0.34;
+//	outJntPos.angles(jp_FullArm.lwr_arm_6_joint) = 0;
 
 //	// start simple joint position controller
 //	kg_.setConstant(1);
@@ -132,8 +138,8 @@ void RttControllerTemplate::updateHook() {
 //	outJntTrq.torques = jnt_trq_cmd_.cast<float>();
 
 	// write torques to robot
-	if (cmdJntTrq_Port.connected()) {
-		cmdJntTrq_Port.write(outJntTrq);
+	if (cmdJntPos_Port.connected()) {
+		cmdJntPos_Port.write(outJntPos);
 	}
 }
 

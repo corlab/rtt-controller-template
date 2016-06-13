@@ -17,7 +17,7 @@ include_directories(include
 # Creates a component library libmyrobot-<target>.so
 # and installs in the directory lib/orocos/myrobot/
 #
-orocos_component(${CMAKE_PROJECT_NAME} controller/rtt-controller-template.cpp parsertools/KDLParser.cpp parsertools/KDLParser.hpp baseclasses/RTTArmControllerBase.cpp baseclasses/RTTArmControllerBase.hpp)
+orocos_component(${CMAKE_PROJECT_NAME} controller/rtt-controller-template.cpp)
 #
 # You may add multiple orocos_component statements.
 
